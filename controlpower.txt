@@ -1,0 +1,1 @@
+* NVIDIA RTX GPUs (RTX 3060ti and RTX 5070ti) running consistantly at 100% heats up the GPU temperature to 85C
