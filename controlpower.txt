@@ -1,4 +1,4 @@
-* NVIDIA RTX GPUs (RTX 3060ti and RTX 5070ti) running consistantly at 100% heats up the GPU temperature to 85C
+* NVIDIA RTX GPUs (RTX 3060ti and RTX 5070ti) running consistantly at 100% heats up the GPU temperature to 85C and unloads driver, cuda fails and running work becomes unresponsive.
 For a Nvidia GPU or if you’ve got multiple NVIDIA GPUs in your system, you can use nvidia-smi to set a separate power limit per GPU.
 
 Step1: Get your GPU info
