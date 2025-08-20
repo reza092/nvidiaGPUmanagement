@@ -1,1 +1,84 @@
 * NVIDIA RTX GPUs (RTX 3060ti and RTX 5070ti) running consistantly at 100% heats up the GPU temperature to 85C
+For a Nvidia GPU or if you’ve got multiple NVIDIA GPUs in your system, you can use nvidia-smi to set a separate power limit per GPU.
+
+Step1: Get your GPU info
+$nvidia-smi -L
+Output should be something like this
+GPU 0: NVIDIA GeForce RTX 5070 Ti (UUID: GPU-adaf16e4-d52b-f461-57e8-ea90186990d6)
+GPU 1: NVIDIA GeForce RTX 3060 Ti (UUID: GPU-b0a2f09b-feca-6bc3-47e5-79f0d8494baf)
+
+Step 2: Get allowed power limits configurations for each GPU
+$nvidia-smi -i 0 -q -d POWER
+$nvidia-smi -i 1 -q -d POWER
+Output: (mine just power limited to 280W from default 300W)
+==============NVSMI LOG==============
+
+Timestamp                                 : Tue Aug 19 23:34:03 2025
+Driver Version                            : 570.153.02
+CUDA Version                              : 12.8
+
+Attached GPUs                             : 2
+GPU 00000000:41:00.0
+    GPU Power Readings
+        Average Power Draw                : 16.52 W
+        Instantaneous Power Draw          : 15.97 W
+        Current Power Limit               : 280.00 W
+        Requested Power Limit             : 280.00 W
+        Default Power Limit               : 300.00 W
+        Min Power Limit                   : 250.00 W
+        Max Power Limit                   : 350.00 W
+    Power Samples
+        Duration                          : 2.36 sec
+        Number of Samples                 : 119
+        Max                               : 23.57 W
+        Min                               : 13.08 W
+        Avg                               : 17.06 W
+    GPU Memory Power Readings 
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+    Module Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+        Current Power Limit               : N/A
+        Requested Power Limit             : N/A
+        Default Power Limit               : N/A
+        Min Power Limit                   : N/A
+        Max Power Limit                   : N/A
+
+Step 3: Now set your desired custom limits \
+It must has to be in between the Min power and Max power limit from configuration above\
+$sudo nvidia-smi -i 0 -pl 280
+$sudo nvidia-smi -i 1 -pl 190
+
+Step 4: Verify the new power configurations
+$nvidia-smi --query-gpu=index,power.limit --format=csv
+Output:
+index, power.limit [W]
+0, 280.00 W
+1, 190.00 W
+
+* Permanent settings: This settings only work temporarity until you reboot. To make it permanent you need to script it in the /etc/
+First, create a systemd service 
+$sudo nano /etc/systemd/system/nvidia-powerlimit.service
+Then, add the following [give your own desired wattage for the GPU]
+[Unit]
+Description=Set NVIDIA GPU Power Limits
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-smi -i 0 -pl 280
+ExecStart=/usr/bin/nvidia-smi -i 1 -pl 180
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+* Save and exit the systemd service
+* Reload and enable service
+$sudo systemctl daemon-reload
+$sudo systemctl enable nvidia-powerlimit.service
+$sudo systemctl start nvidia-powerlimit.service
+
+* Verifty that system service works after reboot & runs stably
+$nvidia-smi --query-gpu=index,power.limit --format=csv
