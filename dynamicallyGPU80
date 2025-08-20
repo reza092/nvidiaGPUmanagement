@@ -1,0 +1,47 @@
+* Following is the way to dynamically set each GPU to 80% of its max power limit by wattage to avoid hardcoding numbers?
+You can set the limit to 90% as well depending on your need and system stability
+
+🔹 Step 1: Fitst test the one-liner to find out that it works to finds each GPU’s max power limit, calculates 80%, and applies it
+$
+for i in $(nvidia-smi --list-gpus | cut -d: -f1 | awk '{print $2}'); do
+    max=$(nvidia-smi -i $i -q -d POWER | grep "Max Power Limit" | awk '{print $5}')
+    target=$(echo "$max * 0.8" | bc | cut -d. -f1)
+    sudo nvidia-smi -i $i -pl $target
+done
+
+Verifty: 
+$nvidia-smi --query-gpu=index,power.limit --format=csv
+
+🔹 Step 2: Create systemd service, edit with a functioning script (above)
+sudo nano /etc/systemd/system/nvidia-powerlimit.service
+
+Paste this:
+
+[Unit]
+Description=Set NVIDIA GPU Power Limits Dynamically
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '\
+for i in $(nvidia-smi --list-gpus | cut -d: -f1 | awk "{print \$2}"); do \
+    max=$(nvidia-smi -i $i -q -d POWER | grep "Max Power Limit" | awk "{print \$5}"); \
+    target=$(echo "$max * 0.8" | bc | cut -d. -f1); \
+    /usr/bin/nvidia-smi -i $i -pl $target; \
+done'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+🔹 Step 3: Enable the new service to work after boot & start it to function now
+$sudo systemctl daemon-reload
+$sudo systemctl enable nvidia-powerlimit.service
+$sudo systemctl start nvidia-powerlimit.service
+
+🔹 Step 4: After rebooting the machine verify 
+$nvidia-smi --query-gpu=index,power.limit,power.default_limit,power.max_limit --format=csv
+
+You should see the applied limits are ~80% of max.
+
+=> You can adjust the 0.8 multiplier in the script (e.g. 0.7 for 70% etc.).
