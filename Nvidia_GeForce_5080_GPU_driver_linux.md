@@ -83,6 +83,9 @@ For BIOS:
 For UEFI: replace ???? with ubuntu or rocky or redhat or check whatever distro name folder you have
 >sudo grub2-mkconfig -o /boot/efi/EFI/????/grub.cfg
 >
+For some older ubuntu, simple update grub
+>sudo update-grub
+
 Restart
 >sudo reboot now
 >
