@@ -83,6 +83,14 @@ For BIOS:
 For UEFI: replace ???? with ubuntu or rocky or redhat or check whatever distro name folder you have
 >sudo grub2-mkconfig -o /boot/efi/EFI/????/grub.cfg
 >
+(
+if it complains- then run the recommended command to update grub
+Running `grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg' will overwrite the GRUB wrapper.
+Please run `grub2-mkconfig -o /boot/grub2/grub.cfg' instead to update grub.cfg.
+GRUB configuration file was not updated.
+>grub2-mkconfig -o /boot/grub2/grub.cfg
+)
+
 For some older ubuntu, simple update grub
 >sudo update-grub
 
