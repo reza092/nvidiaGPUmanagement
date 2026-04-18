@@ -1,2 +1,2 @@
 # nvidiaGPUmanagement
-GPU management in ubuntu debian for stability
+GPU management in RHEL 9.7 for stability
