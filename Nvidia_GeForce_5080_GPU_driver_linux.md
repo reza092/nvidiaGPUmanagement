@@ -89,6 +89,7 @@ Running `grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg' will overwrite the GRU
 Please run `grub2-mkconfig -o /boot/grub2/grub.cfg' instead to update grub.cfg.
 GRUB configuration file was not updated.
 >grub2-mkconfig -o /boot/grub2/grub.cfg
+
 )
 
 For some older ubuntu, simple update grub
