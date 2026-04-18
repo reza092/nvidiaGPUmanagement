@@ -1,5 +1,7 @@
 # Nvidia mixed blackwell GPUs (RTX Pro 5000 Blackwell and RTX 5080) in RHEL 9.7 broke the Graphical Display Manager  (GDM) giving blackscreen
 
+Display issue came back after I swapped one of the two GPUs (RTX 5070ti and RTX 5080) with RTX Pro 5000 blackwell
+
 ***
 ** Start the system in console text mode (tty)
 
